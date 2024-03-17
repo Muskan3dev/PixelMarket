@@ -46,5 +46,5 @@ module.exports = {
 };
 
 /* exports.handler=requestHandler
-exports.someText='Some hard code text'
+exports.someText='some hard code text'
 */
