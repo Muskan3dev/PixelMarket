@@ -47,4 +47,4 @@ module.exports = {
 
 /* exports.handler=requestHandler
 exports.someText='Some hard code text'
- */
+*/
