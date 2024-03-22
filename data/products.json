@@ -1,21 +1,21 @@
 [
   {
     "title": "Book",
-    "imageUrl": "https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU",
+    "imageUrl": "https://fastly.picsum.photos/id/20/3670/2462.jpg?hmac=CmQ0ln-k5ZqkdtLvVO23LjVAEabZQx2wOaT4pyeG10I",
     "description": "This is an awesome product.",
     "price": "200",
     "id": 0.4268470494384702
   },
   {
     "title": "Learn Javascript",
-    "imageUrl": "https://fastly.picsum.photos/id/8/5000/3333.jpg?hmac=OeG5ufhPYQBd6Rx1TAldAuF92lhCzAhKQKttGfawWuA",
+    "imageUrl": "https://fastly.picsum.photos/id/20/3670/2462.jpg?hmac=CmQ0ln-k5ZqkdtLvVO23LjVAEabZQx2wOaT4pyeG10I",
     "description": "This is an awesome product.",
     "price": "500",
     "id": 0.15987470050764396
   },
   {
     "title": "Another Book",
-    "imageUrl": "http://static9.depositphotos.com/1008244/1074/v/170/depositphotos_10745131-Open-book.jpg",
+    "imageUrl": "https://fastly.picsum.photos/id/20/3670/2462.jpg?hmac=CmQ0ln-k5ZqkdtLvVO23LjVAEabZQx2wOaT4pyeG10I",
     "description": "Nice product.",
     "price": "200",
     "id": 0.269035863923931
