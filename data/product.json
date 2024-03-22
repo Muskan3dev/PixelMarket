@@ -1,27 +1,30 @@
 [
   {
-    "id": "791",
-    "title": "This is a test product",
-    "imageUrl": "https://tse4.mm.bing.net/th?id=OIP.-cRUNKZI1jx5Kh2_3hzCPwHaFj&pid=Api&P=0&h=180",
+    "title": "Book",
+    "imageUrl": "https://fastly.picsum.photos/id/9/5000/3269.jpg?hmac=cZKbaLeduq7rNB8X-bigYO8bvPIWtT-mh8GRXtU3vPc",
     "description": "This is an awesome product.",
-    "price": "200"
-  },
-  {
-    "title": "eloquent javascript",
-    "imageUrl": "C:\\Users\\Muskan\\Desktop\\Html-learning\\picture-books-for-children-books.jpg",
-    "description": "This is an awesome product.",
-    "price": "300"
-  },
-  {
-    "title": " javascript for dummies",
-    "imageUrl": "https://in.images.search.yahoo.com/search/images;_ylt=Awrx_fHP8fplklYWPEC7HAx.;_ylu=Y29sbwNzZzMEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=Book+images&fr2=piv-web&type=E211IN826G0&fr=mcafee#id=27&iurl=http%3A%2F%2Fwww.fosternow.com.au%2Fwp-content%2Fuploads%2F2015%2F06%2Fpicture-books-for-children-books.jpg&action=click",
-    "description": "Best book for beginners.",
-    "price": "400"
+    "price": "200",
+    "id": 0.4268470494384702
   },
   {
     "title": "Learn Javascript",
-    "imageUrl": "https://www.google.com/search?sca_esv=5fddc3dd36c4976b&sxsrf=ACQVn09bHDavApmYXSyOfh96VYU5vmDIjA:1710946698391&q=javascript+book+image&tbm=isch&source=lnms&prmd=isvbnmtz&sa=X&ved=2ahUKEwjZor-RjYOFAxUkR2wGHY_GDxgQ0pQJegQICxAB&biw=1280&bih=585&dpr=1.5#imgrc=ODT17WwO7aBNdM",
-    "description": "This is an awesome Book.",
-    "price": "500"
+    "imageUrl": "https://fastly.picsum.photos/id/8/5000/3333.jpg?hmac=OeG5ufhPYQBd6Rx1TAldAuF92lhCzAhKQKttGfawWuA",
+    "description": "This is an awesome product.",
+    "price": "500",
+    "id": 0.15987470050764396
+  },
+  {
+    "title": "Another Book",
+    "imageUrl": "http://static9.depositphotos.com/1008244/1074/v/170/depositphotos_10745131-Open-book.jpg",
+    "description": "Nice product.",
+    "price": "200",
+    "id": 0.269035863923931
+  },
+  {
+    "title": "Learn MongoDB",
+    "imageUrl": "https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM",
+    "description": "Awesome product.",
+    "price": "500",
+    "id": 0.1176121915553967
   }
 ]
