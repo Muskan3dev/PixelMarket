@@ -79,7 +79,7 @@ class Product {
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = id;
+    this._id = new mongodb.ObjectId(id);
   }
 
   save() {
