@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use((req, res, next) => {
   User.findById("6608226ee36f07a34efcdae1")
     .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch((err) => console.log(err));
@@ -36,8 +36,8 @@ mongoose
     "mongodb+srv://Muskan03:CWJi1t4eDjANZZE3@cluster2.uv8bpmx.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster2"
   )
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
+    User.findOne().then((existingUser) => {
+      if (!existingUser) {
         const user = new User({
           name: "Sam",
           email: "sam@test.com",
