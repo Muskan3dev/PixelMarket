@@ -36,7 +36,10 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById("6608226ee36f07a34efcdae1")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();
@@ -51,9 +54,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(
-    "mongodb+srv://Muskan03:CWJi1t4eDjANZZE3@cluster2.uv8bpmx.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster2"
-  )
+  .connect(MONGODB_URI)
   .then((result) => {
     User.findOne().then((existingUser) => {
       if (!existingUser) {
