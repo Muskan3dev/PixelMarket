@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
+const User = require("../models/user");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -56,30 +57,51 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  req.user
-    .populate("cart.items.productId")
-    .then((user) => {
-      const products = user.cart.items;
-      console.log(products);
-      res.render("shop/cart", {
-        path: "/cart",
-        pageTitle: "Your Cart",
-        products: products,
-        isAuthenticated: req.session.isLoggedIn,
-      });
-    })
-    .catch((err) => console.log(err));
+  // Check if req.session exists and contains user-related data
+  if (!req.session || !req.session.user) {
+    // Redirect to login page or handle unauthorized access
+    return res.redirect("/login");
+  }
+  const sData = JSON.parse(req.session.user);
+  const products = sData.cart.items;
+  console.log({ products: products });
+  res.render("shop/cart", {
+    path: "/cart",
+    pageTitle: "Your Cart",
+    products: products,
+    isAuthenticated: req.session.isLoggedIn,
+  });
 };
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
+
+  // Retrieve the product details
   Product.findById(prodId)
     .then((product) => {
-      return req.user.addToCart(product);
+      if (!product) {
+        throw new Error("Product not found");
+      }
+      const sessData = JSON.parse(req.session.user);
+      const userId = sessData._id;
+      // Call the addToCart method on the user
+      return User.findById(userId).then((user) => {
+        if (!user) {
+          throw new Error("User not found");
+        }
+        user.addToCart(product);
+        req.session.user = JSON.stringify(user); //Update the session data
+      });
     })
     .then((result) => {
-      console.log(result);
-      res.redirect("/cart");
+      console.log("Product added to cart:", result);
+      console.log({ updatedSession: req.session.user });
+      res.redirect("/cart"); // Redirect to the cart page
+    })
+    .catch((err) => {
+      console.error("Error adding product to cart:", err);
+      // Handle the error (e.g., show an error page)
+      res.status(500).send("Error adding product to cart");
     });
 };
 
@@ -103,7 +125,7 @@ exports.postOrder = async (req, res, next) => {
 
     const order = new Order({
       user: {
-        name: req.user.name,
+        email: req.user.email,
         userId: req.user,
       },
       products: products,
