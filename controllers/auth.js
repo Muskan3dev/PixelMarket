@@ -13,7 +13,7 @@ exports.getLogin = (req, res, next) => {
 exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
     path: "/signup",
-    pageTitle: "Login",
+    pageTitle: "Signup",
     isAuthenticated: false,
   });
 };
@@ -32,7 +32,6 @@ exports.postLogin = (req, res, next) => {
           if (doMatch) {
             req.session.isLoggedIn = true;
             req.session.user = JSON.stringify(user);
-            // req.session.user = user;
             console.log({ session: req.session });
             return req.session.save((err) => {
               console.log(err);
