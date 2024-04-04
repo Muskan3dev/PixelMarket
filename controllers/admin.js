@@ -1,7 +1,8 @@
 const Product = require("../models/product");
+const user = require("../models/user");
 
 exports.getAddProduct = (req, res, next) => {
-  res.render("admin/add-product", {
+  res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
@@ -12,14 +13,17 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
-  const price = +req.body.price;
+  const price = req.body.price;
   const description = req.body.description;
+  const sessionData = JSON.parse(req.session.user);
+  const userId = sessionData._id;
+  console.log({ reqd: req.body, r: req.session.user });
   const product = new Product({
     title: title,
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.user,
+    userId: userId,
   });
   product
     .save()
@@ -29,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error for add Product", err);
     });
 };
 
@@ -40,7 +44,6 @@ exports.getEditProduct = (req, res, next) => {
   }
   const prodId = req.params.productId;
   Product.findById(prodId)
-    // Product.findById(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
