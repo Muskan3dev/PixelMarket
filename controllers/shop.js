@@ -59,7 +59,6 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   // Check if req.session exists and contains user-related data
   if (!req.session || !req.session.user) {
-    // Redirect to login page or handle unauthorized access
     return res.redirect("/login");
   }
   const sData = JSON.parse(req.session.user);
