@@ -116,22 +116,31 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    const user = await req.user.populate("cart.items.productId");
-
+    const sessionData = JSON.parse(req.session.user);
+    const userId = sessionData._id;
+    const email = sessionData.email;
+    const cartItems = sessionData.cart.items;
+    console.log({ cartitems: cartItems });
+    const user = await User.findById(userId).populate({
+      path: "cartItems.productId",
+      strictPopulate: false,
+    });
+    console.log({ user: user });
     const products = user.cart.items.map((i) => {
       return { quantity: i.quantity, productData: { ...i.productId._doc } };
     });
-
+    console.log({ productCart: products });
     const order = new Order({
       user: {
-        email: req.user.email,
-        userId: req.user,
+        email: email,
+        userId: userId,
       },
       products: products,
     });
 
     const result = await order.save();
-    return req.user.clearCart();
+    console.log({ CartItems: result });
+    await user.clearCart();
     res.redirect("/orders");
   } catch (err) {
     console.log(err);
@@ -139,8 +148,11 @@ exports.postOrder = async (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  Order.find({ "user.userId": req.user._id })
+  const sessionData = JSON.parse(req.session.user);
+  const userId = sessionData._id;
+  Order.find({ "user.userId": userId })
     .then((orders) => {
+      console.log({ Orders: orders });
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
