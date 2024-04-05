@@ -105,13 +105,25 @@ exports.postCart = (req, res, next) => {
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  req.user
-    .removeFromCart(prodId)
-    .then((result) => {
-      res.redirect("/cart");
-    })
-    .catch((err) => console.log(err));
+  const sessionUser = JSON.parse(req.session.user);
+  if (sessionUser && sessionUser.cart && sessionUser.cart.items) {
+    let prodId;
+    sessionUser.cart.items.forEach((item) => {
+      prodId = item.productId;
+    });
+    const updatedCartItems = sessionUser.cart.items.filter(
+      (item) => item.productId !== prodId
+    );
+    sessionUser.cart.items = updatedCartItems;
+  }
+
+  req.session.user = JSON.stringify(sessionUser);
+  req.session.save((err) => {
+    if (err) {
+      console.log("Error saving session:", err);
+    }
+    res.redirect("/cart");
+  });
 };
 
 exports.postOrder = async (req, res, next) => {
@@ -125,7 +137,7 @@ exports.postOrder = async (req, res, next) => {
       path: "cartItems.productId",
       strictPopulate: false,
     });
-    console.log({ user: user });
+
     const products = user.cart.items.map((i) => {
       return { quantity: i.quantity, productData: { ...i.productId._doc } };
     });
@@ -152,7 +164,6 @@ exports.getOrders = (req, res, next) => {
   const userId = sessionData._id;
   Order.find({ "user.userId": userId })
     .then((orders) => {
-      console.log({ Orders: orders });
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
