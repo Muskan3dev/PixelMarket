@@ -1,5 +1,6 @@
 const User = require("../models/user");
 
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
@@ -143,5 +144,78 @@ exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     console.log(err);
     res.redirect("/");
+  });
+};
+
+exports.getReset = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Reset Password",
+    errorMessage: message,
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "No Acount with that email found");
+          return res.redirect("/reset");
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        user.save();
+      })
+      .then((result) => {
+        res.redirect("/");
+        let config = {
+          service: "gmail",
+          auth: {
+            user: EMAIL,
+            pass: PASSWORD,
+          },
+        };
+        let transporter = nodemailer.createTransport(config);
+        let MailGenerator = new Mailgen({
+          theme: "default",
+          product: {
+            name: "Mailgen",
+            link: "https://mailgen.js",
+          },
+        });
+        let response = {
+          body: {
+            name: "From shop@node-complete.com ",
+            intro: "Password reset",
+            outro: `<p>You requested a password reset</p>
+          <p>Click this <a href="http://localhost:5000/reset/${token}">link</a> to reset password`,
+          },
+        };
+        let mail = MailGenerator.generate(response);
+        let message = {
+          from: EMAIL,
+          to: req.body.email,
+          subject: "Reset Password",
+          html: mail,
+        };
+
+        // Send the email
+        return transporter.sendMail(message);
+      })
+      .catch((err) => {
+        console.log("Error", err);
+      });
   });
 };
