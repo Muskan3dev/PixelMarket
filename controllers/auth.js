@@ -1,6 +1,9 @@
 const User = require("../models/user");
 
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const Mailgen = require("mailgen");
+const { EMAIL, PASSWORD } = require("../env.js");
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -68,6 +71,7 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+
   User.findOne({ email: email })
     .then((userDoc) => {
       if (userDoc) {
@@ -77,22 +81,61 @@ exports.postSignup = (req, res, next) => {
         );
         return res.redirect("/signup");
       }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-        });
+
+      // Hash the password
+      return bcrypt.hash(password, 12);
+    })
+    .then((hashedPassword) => {
+      // Create a new user
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      // Send a confirmation email
+      let config = {
+        service: "gmail",
+        auth: {
+          user: EMAIL,
+          pass: PASSWORD,
+        },
+      };
+      let transporter = nodemailer.createTransport(config);
+      let MailGenerator = new Mailgen({
+        theme: "default",
+        product: {
+          name: "Mailgen",
+          link: "https://mailgen.js",
+        },
+      });
+      let response = {
+        body: {
+          name: "From shop@node-complete.com ",
+          intro: "Signup Confirmation",
+          outro: "You Successfully Signed up.",
+        },
+      };
+      let mail = MailGenerator.generate(response);
+      let message = {
+        from: EMAIL,
+        to: email,
+        subject: "Signup Confirmation",
+        html: mail,
+      };
+
+      // Send the email
+      return transporter.sendMail(message);
+    })
+    .then(() => {
+      // Redirect to login page after email is sent
+      res.redirect("/login");
     })
     .catch((err) => {
-      console.log(err);
+      console.log("ERROR", err);
+      res.status(500).json({ error: "Internal server error" });
     });
 };
 
