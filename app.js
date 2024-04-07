@@ -7,6 +7,7 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const flash = require("connect-flash");
 const csrf = require("csurf");
+const cookieParser = require("cookie-parser"); // Add cookie-parser
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -19,7 +20,6 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
-const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -30,6 +30,9 @@ const authRoutes = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(cookieParser()); // Using cookie parser before session middleware
+
 app.use(
   session({
     secret: "my secret",
@@ -38,7 +41,11 @@ app.use(
     store: store,
   })
 );
+
+// CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
+
 app.use(flash());
 
 app.use((req, res, next) => {
