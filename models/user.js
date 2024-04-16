@@ -53,7 +53,6 @@ userSchema.methods.addToCart = function (product) {
 };
 
 userSchema.methods.removeFromCart = function (productId) {
-  console.log({ productId: productId });
   if (!productId) {
     throw new Error("Invalid product ID");
   }
