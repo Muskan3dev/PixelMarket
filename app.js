@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const flash = require("connect-flash");
-const multer = require("multer");
 const csrf = require("csurf");
+const multer = require("multer");
 const cookieParser = require("cookie-parser"); // Add cookie-parser
 
 const errorController = require("./controllers/error");
@@ -21,6 +21,7 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
+const csrfProtection = csrf();
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
@@ -58,8 +59,6 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-app.use(cookieParser()); // Using cookie parser before session middleware
-
 app.use(
   session({
     secret: "my secret",
@@ -69,8 +68,6 @@ app.use(
   })
 );
 
-// CSRF protection middleware
-const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
 app.use(flash());
@@ -82,20 +79,29 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
+  // Check if req.session.user exists
   if (!req.session.user) {
     return next();
   }
-  User.findById(req.session.user._id)
-    .then((user) => {
-      if (!user) {
-        return next();
-      }
-      req.user = user;
-      next();
-    })
-    .catch((err) => {
-      next(new Error(err));
-    });
+
+  try {
+    const parsedSessionData = JSON.parse(req.session.user);
+    const userId = parsedSessionData._id;
+
+    User.findById(userId)
+      .then((user) => {
+        if (!user) {
+          return next();
+        }
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        next(new Error(err));
+      });
+  } catch (parseError) {
+    next(new Error(parseError));
+  }
 });
 
 app.use("/admin", adminRoutes);
