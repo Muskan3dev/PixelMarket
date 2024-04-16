@@ -5,6 +5,7 @@
     <body>
         <%- include('../includes/navigation.ejs') %>
             <main>
+
                 <% if (products.length> 0) { %>
                     <ul class="cart__item-list">
                         <% products.forEach(p=> { %>
@@ -12,10 +13,15 @@
                                 <h1>
                                     <%= p.productId.title %>
                                 </h1>
-                                <h2>Quantity: <%= p.quantity %>
-                                </h2>
+                                <h1>
+
+                                    Quantity: <%= p.quantity %>
+                                </h1>
+
+
                                 <form action="/cart-delete-item" method="POST">
                                     <input type="hidden" value="<%= p.productId._id %>" name="productId">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                     <button class="btn danger" type="submit">Delete</button>
                                 </form>
                             </li>
