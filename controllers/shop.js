@@ -53,18 +53,21 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  // Check if req.session exists and contains user-related data
-  if (!req.session || !req.session.user) {
-    return res.redirect("/login");
-  }
-  const sData = JSON.parse(req.session.user);
-  const products = sData.cart.items;
-  console.log({ products: products });
-  res.render("shop/cart", {
-    path: "/cart",
-    pageTitle: "Your Cart",
-    products: products,
-  });
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items;
+      res.render("shop/cart", {
+        path: "/cart",
+        pageTitle: "Your Cart",
+        products: products,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -100,25 +103,19 @@ exports.postCart = (req, res, next) => {
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
-  const sessionUser = JSON.parse(req.session.user);
-  if (sessionUser && sessionUser.cart && sessionUser.cart.items) {
-    let prodId;
-    sessionUser.cart.items.forEach((item) => {
-      prodId = item.productId;
+  const prodId = req.body.productId;
+  req.user
+    .removeFromCart(prodId)
+    .then((result) => {
+      console.log("Product removed from cart:", result);
+      console.log({ UpdatedCart: req.user.cart });
+      res.redirect("/cart");
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
-    const updatedCartItems = sessionUser.cart.items.filter(
-      (item) => item.productId !== prodId
-    );
-    sessionUser.cart.items = updatedCartItems;
-  }
-
-  req.session.user = JSON.stringify(sessionUser);
-  req.session.save((err) => {
-    if (err) {
-      console.log("Error saving session:", err);
-    }
-    res.redirect("/cart");
-  });
 };
 
 exports.postOrder = async (req, res, next) => {
