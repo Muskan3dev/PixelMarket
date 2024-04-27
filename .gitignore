@@ -1,6 +1,7 @@
 node_modules
 .hintrc
-env.js
 images
+env.js
 data
 node
+nodemon.json
