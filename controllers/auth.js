@@ -4,7 +4,6 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
-const { EMAIL, PASSWORD } = require("../env.js");
 const { check, validationResult } = require("express-validator");
 
 exports.getLogin = (req, res, next) => {
@@ -200,8 +199,8 @@ exports.postReset = (req, res, next) => {
         let config = {
           service: "gmail",
           auth: {
-            user: EMAIL,
-            pass: PASSWORD,
+            user: process.env.EMAIL,
+            pass: process.env.PASSWORD,
           },
         };
         let transporter = nodemailer.createTransport(config);
@@ -222,7 +221,7 @@ exports.postReset = (req, res, next) => {
         };
         let mail = MailGenerator.generate(response);
         let message = {
-          from: EMAIL,
+          from: process.env.EMAIL,
           to: req.body.email,
           subject: "Reset Password",
           html: mail,
